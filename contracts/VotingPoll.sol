@@ -133,7 +133,7 @@ contract VotingPoll {
     }
 
     modifier isStillActive(uint _pollId) {
-        require(polls[_pollId].endDate < block.timestamp || polls[_pollId].endDate == 0);
+        require(polls[_pollId].endDate > block.timestamp || polls[_pollId].endDate == 0);
         _;
     }
 
