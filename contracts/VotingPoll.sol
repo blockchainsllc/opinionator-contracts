@@ -1,5 +1,5 @@
+pragma solidity ^0.5.10;
 pragma experimental ABIEncoderV2;
-pragma solidity ^0.4.23;
 
 ///@dev the polls could be spamed with proposals to reduce iteration speed
 
@@ -39,7 +39,7 @@ contract VotingPoll {
     ///@param _startDate the start date of the proposal
     ///@param _endDate the endDate of the proposal (0 for no end date)
     ///@param _votingChoice How double votes should be counted
-    function createPoll(string _name, string _description, uint _startDate, uint _endDate, VotingChoice _votingChoice, bool _standardPoll) public {
+    function createPoll(string memory _name, string memory _description, uint _startDate, uint _endDate, VotingChoice _votingChoice, bool _standardPoll) public {
         Poll memory newPoll;
         newPoll.name = _name;
         newPoll.description = _description;
@@ -62,7 +62,7 @@ contract VotingPoll {
     ///@param _proposalName The name of the proposal
     ///@param _proposalDescription The high level description of the proposal
     ///@param _pollId The id of the proposal which it is part of
-    function createProposalInternal(string _proposalName, string _proposalDescription, uint _pollId, bool _activated) internal {
+    function createProposalInternal(string memory _proposalName, string memory _proposalDescription, uint _pollId, bool _activated) internal {
 
         Proposal memory newProposal;
         newProposal.name = _proposalName;
@@ -79,8 +79,8 @@ contract VotingPoll {
     ///@param _proposalName The name of the proposal
     ///@param _proposalDescription The high level description of the proposal
     ///@param _pollId The id of the proposal which it is part of
-    function createProposal(string _proposalName, string _proposalDescription, uint _pollId) public isStillActive(_pollId) {
-        require(!polls[_pollId].standardPoll);
+    function createProposal(string memory _proposalName, string memory _proposalDescription, uint _pollId) public isStillActive(_pollId) {
+        require(!polls[_pollId].standardPoll, "Error: You can not add proposals to standart polls!");
         if(polls[_pollId].author == msg.sender)
             createProposalInternal(_proposalName,  _proposalDescription, _pollId, true);
         else
@@ -92,8 +92,8 @@ contract VotingPoll {
     ///@param _pollId The id of the proposal
     function activateProposal(uint _proposalId, uint _pollId) public onlyPollAuthor(_pollId) isStillActive(_pollId) {
         ///@dev issues with 0?
-        require(proposals[_proposalId].pollId == _pollId);
-        require(!proposals[_proposalId].activated);
+        require(proposals[_proposalId].pollId == _pollId, "Error: This proposal is not part of that poll!");
+        require(!proposals[_proposalId].activated, "Error: Proposal is already activated!");
         proposals[_proposalId].activated = true;
 
         emit LogProposalActivated(_pollId, _proposalId, proposals[_proposalId].author);
@@ -101,13 +101,13 @@ contract VotingPoll {
 
     ///@notice returns an array with the proposal ids for a specific poll
     ///@param _pollId The id of the poll that is to be searched
-    function getProposalsFromPoll(uint _pollId) public view returns (uint[]) {
+    function getProposalsFromPoll(uint _pollId) public view returns (uint[] memory) {
         return polls[_pollId].proposalIds;
     }
 
     ///@notice returns a poll with the given id
     ///@param _pollId The id of the poll requested
-    function getPoll(uint _pollId) public view returns(Poll) {
+    function getPoll(uint _pollId) public view returns(Poll memory) {
         return polls[_pollId];
     }
 
@@ -118,22 +118,22 @@ contract VotingPoll {
 
     ///@notice return all values from proposal
     ///@param _proposalId The Id of the searched proposal
-    function getProposal(uint _proposalId) public view returns(string, string, address, uint) {
+    function getProposal(uint _proposalId) public view returns(string memory, string memory, address, uint) {
         return (proposals[_proposalId].name, proposals[_proposalId].description, proposals[_proposalId].author, proposals[_proposalId].pollId);
     }
 
     modifier onlyPollAuthor(uint pollId) {
-        require(msg.sender == polls[pollId].author);
+        require(msg.sender == polls[pollId].author, "Error: You are not the poll owner!");
         _;
     }
 
     modifier onlyProposalAuthor(uint proposalId) {
-        require(msg.sender == proposals[proposalId].author);
+        require(msg.sender == proposals[proposalId].author, "Error: You are not the proposal owner!");
         _;
     }
 
     modifier isStillActive(uint _pollId) {
-        require(polls[_pollId].endDate > block.timestamp || polls[_pollId].endDate == 0);
+        require(polls[_pollId].endDate > block.timestamp || polls[_pollId].endDate == 0, "Error: This poll is not active anymore!");
         _;
     }
 
