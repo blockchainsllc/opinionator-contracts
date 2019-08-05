@@ -39,6 +39,7 @@ contract VotingPoll {
     ///@param _startDate the start date of the proposal
     ///@param _endDate the endDate of the proposal (0 for no end date)
     ///@param _votingChoice How double votes should be counted
+    ///@param _standardPoll If true, yes and no proposal will be created and further proposal creation prohibited
     function createPoll(string memory _name, string memory _description, uint _startDate, uint _endDate, VotingChoice _votingChoice, bool _standardPoll) public {
         Poll memory newPoll;
         newPoll.name = _name;
@@ -62,6 +63,7 @@ contract VotingPoll {
     ///@param _proposalName The name of the proposal
     ///@param _proposalDescription The high level description of the proposal
     ///@param _pollId The id of the proposal which it is part of
+    ///@param _activated true if created by poll author, else its false and needs to be activated by poll author
     function createProposalInternal(string memory _proposalName, string memory _proposalDescription, uint _pollId, bool _activated) internal {
 
         Proposal memory newProposal;
