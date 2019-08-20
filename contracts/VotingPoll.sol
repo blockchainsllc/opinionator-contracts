@@ -10,7 +10,6 @@ contract VotingPoll {
         string description;
         uint[] proposalIds;
         address author;
-        bool allowProposalUpdate;
         bool standardPoll;
         uint startDate;
         uint endDate; ///@dev if 0 then open end
@@ -24,6 +23,7 @@ contract VotingPoll {
         bool activated;
         uint pollId;
     }
+
 
     enum VotingChoice {useNewestVote, useOldestVote, nullifyAllOnDoubleVote}
 
@@ -155,13 +155,20 @@ contract VotingPoll {
         external
         view
         returns(
-            string memory,
-            string memory,
-            address,
-            uint
+            string memory name,
+            string memory description,
+            address author,
+            uint pollId,
+            bool activated
         )
     {
-        return (proposals[_proposalId].name, proposals[_proposalId].description, proposals[_proposalId].author, proposals[_proposalId].pollId);
+        return (
+            proposals[_proposalId].name,
+            proposals[_proposalId].description,
+            proposals[_proposalId].author,
+            proposals[_proposalId].pollId,
+            proposals[_proposalId].activated
+        );
     }
 
     ///@notice returns an array with the proposal ids for a specific poll
@@ -173,11 +180,6 @@ contract VotingPoll {
 
     modifier onlyPollAuthor(uint pollId) {
         require(msg.sender == polls[pollId].author, "Error: You are not the poll owner!");
-        _;
-    }
-
-    modifier onlyProposalAuthor(uint proposalId) {
-        require(msg.sender == proposals[proposalId].author, "Error: You are not the proposal owner!");
         _;
     }
 
