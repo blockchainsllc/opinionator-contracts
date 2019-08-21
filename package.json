@@ -1,0 +1,24 @@
+{
+  "name": "voting-contracts",
+  "version": "1.0.0",
+  "description": "This contract stores all poll and proposal data for the opinionator. Each poll has an author who can administrate his polls. Polls consist of prposals which can be voted on. Proposals can be created by everyone but the pol author needs to activate them before they can be voted on.",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "truffle": "^5.0.32"
+  },
+  "devDependencies": {
+    "solidity-coverage": "^0.6.4"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.slock.it:blockchain-voting/voting-contracts.git"
+  },
+  "author": "Jonas Bentke",
+  "license": "GPL-3.0-or-later"
+}
